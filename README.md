@@ -1,6 +1,8 @@
 # Alfred 
 
-#### Notification Superpowers
+Work in progress.
+
+### Notification Superpowers
 
  - Classify and auto dismiss spam notifications.
  - Automate MFA flows when enabled. (such as Okta)
