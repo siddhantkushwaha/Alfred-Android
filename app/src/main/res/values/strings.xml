@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Alfred</string>
+    <string name="action_notification_service_receiver">com.siddhantkushwaha.alfred.NOTIFICATION_SERVICE_RECEIVER</string>
 </resources>
