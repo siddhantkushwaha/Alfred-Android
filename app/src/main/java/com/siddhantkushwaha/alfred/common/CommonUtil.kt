@@ -1,9 +1,12 @@
-package com.siddhantkushwaha.alfred
+package com.siddhantkushwaha.alfred.common
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
+import java.io.File
+import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -55,5 +58,18 @@ object CommonUtil {
                 permission
             ) != PackageManager.PERMISSION_GRANTED
         }.toTypedArray()
+    }
+
+    public fun saveBitmapToFile(context: Context, name: String, bitmap: Bitmap): String? {
+        try {
+            val file = File(context.getExternalFilesDir(null), name)
+            val fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            fos.close()
+            return file.toURI().toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 }

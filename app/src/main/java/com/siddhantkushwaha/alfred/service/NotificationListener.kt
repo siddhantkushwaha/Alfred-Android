@@ -8,6 +8,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.siddhantkushwaha.alfred.R
+import com.siddhantkushwaha.alfred.index.Index
 
 class NotificationListener : NotificationListenerService() {
 
@@ -37,7 +38,9 @@ class NotificationListener : NotificationListenerService() {
         super.onNotificationPosted(sbn)
         if (sbn != null) {
 
-            Log.d(tag, "Notification received.")
+            Log.d(tag, "Notification received, saving.")
+
+            Index.saveNotification(this, listOf(sbn))
 
             // TODO - classify notification and dismiss if spam
             // cancelNotification(sbn.key)
@@ -58,17 +61,11 @@ class NotificationListener : NotificationListenerService() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
 
-            Log.d(tag, "Broadcast received. Showing all active notifications")
+            if (context == null || intent == null)
+                return
 
-            notificationListener.activeNotifications.forEach { notification ->
-
-                Log.d(tag, "${notification.id} ${notification.packageName}")
-                val extras = notification.notification.extras
-                extras.keySet().forEach { key ->
-                    Log.d(tag, "$key, ${extras.get(key)}")
-                }
-            }
-
+            Log.d(tag, "Broadcast received. Saving all active notifications")
+            Index.saveNotification(context, notificationListener.activeNotifications.asList())
         }
     }
 }
