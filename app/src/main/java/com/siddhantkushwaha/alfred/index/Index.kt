@@ -38,7 +38,8 @@ object Index {
                         notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
                     }
 
-                    notification.timestamp = sbn.postTime
+                    if (sbn.isOngoing)
+                        notification.timestamp = sbn.postTime
 
                     val properties = notification.getProperties() ?: HashMap()
 
@@ -49,7 +50,7 @@ object Index {
                             context,
                             smallIconBitmap
                         )
-                        properties["android.smallIcon"] = smallIconUri
+                        updateValueForKey(sbn, properties, "android.smallIcon", smallIconUri)
                     }
 
                     val largeIcon = sbn.notification.getLargeIcon()
@@ -59,7 +60,7 @@ object Index {
                             context,
                             largeIconBitmap
                         )
-                        properties["android.largeIcon"] = largeIconUri
+                        updateValueForKey(sbn, properties, "android.largeIcon", largeIconUri)
                     }
 
                     val extras = sbn.notification.extras
@@ -118,19 +119,7 @@ object Index {
                             }
                         }
 
-                        /* Don't update if key already exists
-                        This covers Deleted/Unsent messages */
-                        var updateValue = true
-
-                        if(properties.containsKey(key))
-                            updateValue = false
-
-                        if(sbn.isOngoing)
-                            updateValue = true
-
-                        if (updateValue) {
-                            properties[key] = stringValue
-                        }
+                        updateValueForKey(sbn, properties, key, stringValue)
                     }
 
                     notification.setProperties(properties)
@@ -141,5 +130,27 @@ object Index {
         }
 
         task.start()
+    }
+
+    private fun updateValueForKey(
+        sbn: StatusBarNotification,
+        properties: HashMap<String, String?>,
+        key: String,
+        value: String?
+    ) {
+
+        var updateValue = true
+
+        /* Don't update if key already exists
+        This covers Deleted/Unsent messages */
+        if (properties.containsKey(key))
+            updateValue = false
+
+        if (sbn.isOngoing)
+            updateValue = true
+
+        if (updateValue) {
+            properties[key] = value
+        }
     }
 }

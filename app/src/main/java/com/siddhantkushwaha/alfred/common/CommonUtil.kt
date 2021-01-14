@@ -6,8 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -63,12 +63,17 @@ object CommonUtil {
 
     public fun saveBitmapToFile(context: Context, bitmap: Bitmap): String? {
         try {
-            val bitmapHash = bitmap.hashCode()
-            val name = "${bitmapHash}.png"
+            val bos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos)
+
+            val bitmapBytes = bos.toByteArray()
+            bos.close()
+
+            val hash = getHash(String(bitmapBytes))
+            val name = "${hash}.png"
+
             val file = File(context.getExternalFilesDir(null), name)
-            val fos = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            fos.close()
+            file.writeBytes(bitmapBytes)
             return file.toURI().toString()
         } catch (e: Exception) {
             e.printStackTrace()
