@@ -3,6 +3,7 @@ package com.siddhantkushwaha.alfred.common
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import java.io.File
@@ -67,6 +68,25 @@ object CommonUtil {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
             fos.close()
             return file.toURI().toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    public fun getAppNameByPackage(context: Context, packageName: String): String? {
+        try {
+            val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
+            return context.packageManager.getApplicationLabel(appInfo).toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    public fun getAppLogoByPackage(context: Context, packageName: String): Drawable? {
+        try {
+            return context.packageManager.getApplicationLogo(packageName)
         } catch (e: Exception) {
             e.printStackTrace()
         }

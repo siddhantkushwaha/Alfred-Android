@@ -24,8 +24,9 @@ object Index {
                     val nId = sbn.id
                     val nTag = sbn.tag
                     val nPackage = sbn.packageName
+                    val nTimestamp = sbn.postTime
 
-                    val notificationId = CommonUtil.getHash("$nId-$nTag-$nPackage")
+                    val notificationId = CommonUtil.getHash("$nId-$nTag-$nPackage-$nTimestamp")
 
                     var notification =
                         realmT.where(Notification::class.java).equalTo("id", notificationId)
@@ -33,10 +34,15 @@ object Index {
                     if (notification == null) {
                         notification = realmT.createObject(Notification::class.java, notificationId)
                             ?: throw Exception("Could not create notification entity.")
+
+                        notification.packageName = nPackage
+
+                        notification.timestamp = nTimestamp
+
+                        notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
                     }
 
-                    notification.packageName = nPackage
-                    notification.timestamp = sbn.postTime
+                    val properties = notification.getProperties() ?: HashMap()
 
                     val smallIcon = sbn.notification.smallIcon
                     if (smallIcon != null) {
@@ -46,6 +52,7 @@ object Index {
                             "${notificationId}_android.smallIcon.png",
                             smallIconBitmap
                         )
+                        properties["android.smallIcon"] = smallIconUri
                     }
 
                     val largeIcon = sbn.notification.getLargeIcon()
@@ -56,10 +63,8 @@ object Index {
                             "${notificationId}_android.largeIcon.png",
                             largeIconBitmap
                         )
+                        properties["android.largeIcon"] = largeIconUri
                     }
-
-                    val properties = notification.getProperties()
-                        ?: HashMap()
 
                     val extras = sbn.notification.extras
                     for (key in extras.keySet()) {
@@ -79,34 +84,40 @@ object Index {
                             }
 
                             Icon::class.java -> {
-                                val icon = (value as Icon)
-                                val iconDrawable = icon.loadDrawable(context)
-                                val iconBitmap = iconDrawable.toBitmap()
-                                CommonUtil.saveBitmapToFile(
-                                    context,
-                                    "${notificationId}_$key.png",
-                                    iconBitmap
-                                )
+                                val icon = (value as? Icon)
+                                if (icon != null) {
+                                    val iconDrawable = icon.loadDrawable(context)
+                                    val iconBitmap = iconDrawable.toBitmap()
+                                    CommonUtil.saveBitmapToFile(
+                                        context,
+                                        "${notificationId}_$key.png",
+                                        iconBitmap
+                                    )
+                                } else null
                             }
 
                             Bitmap::class.java -> {
-                                val bitmap = (value as Bitmap)
-                                CommonUtil.saveBitmapToFile(
-                                    context,
-                                    "${notificationId}_$key.png",
-                                    bitmap
-                                )
+                                val bitmap = (value as? Bitmap)
+                                if (bitmap != null) {
+                                    CommonUtil.saveBitmapToFile(
+                                        context,
+                                        "${notificationId}_$key.png",
+                                        bitmap
+                                    )
+                                } else null
                             }
 
                             Picture::class.java -> {
-                                val picture = (value as Picture)
-                                val pictureDrawable = PictureDrawable(picture)
-                                val pictureBitmap = pictureDrawable.toBitmap()
-                                CommonUtil.saveBitmapToFile(
-                                    context,
-                                    "${notificationId}_$key.png",
-                                    pictureBitmap
-                                )
+                                val picture = (value as? Picture)
+                                if (picture != null) {
+                                    val pictureDrawable = PictureDrawable(picture)
+                                    val pictureBitmap = pictureDrawable.toBitmap()
+                                    CommonUtil.saveBitmapToFile(
+                                        context,
+                                        "${notificationId}_$key.png",
+                                        pictureBitmap
+                                    )
+                                } else null
                             }
 
                             else -> {
@@ -118,7 +129,7 @@ object Index {
                         /* Don't update if key already exists
                         This covers Deleted/Unsent messages */
                         if (!properties.containsKey(key)) {
-                            properties[key] = Pair(valueClassString, stringValue)
+                            properties[key] = stringValue
                         }
                     }
 

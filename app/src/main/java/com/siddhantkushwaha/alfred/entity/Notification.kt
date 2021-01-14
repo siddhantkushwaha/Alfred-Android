@@ -12,15 +12,16 @@ open class Notification : RealmObject() {
 
     public var timestamp: Long? = null
     public var packageName: String? = null
+    public var appName: String? = null
 
     // properties is going to be a JSON string
     public var properties: String? = null
 
-    public fun setProperties(properties: HashMap<String, Pair<String, String?>>) {
+    public fun setProperties(properties: HashMap<String, String?>) {
         this.properties = GsonUtil.toJson(properties)
     }
 
-    public fun getProperties(): HashMap<String, Pair<String, String?>>? {
+    public fun getProperties(): HashMap<String, String?>? {
         val propertiesL = properties ?: return null
         return GsonUtil.fromJson(
             propertiesL,
@@ -30,6 +31,6 @@ open class Notification : RealmObject() {
 
     public fun getProperty(key: String): String? {
         val propertiesMap = getProperties()
-        return propertiesMap?.get(key)?.second
+        return propertiesMap?.get(key)
     }
 }
