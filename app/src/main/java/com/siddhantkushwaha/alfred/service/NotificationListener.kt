@@ -39,6 +39,12 @@ class NotificationListener : NotificationListenerService() {
         super.onNotificationPosted(sbn)
         if (sbn != null) {
 
+            // this function will be called multiple times for ongoing notifications
+            // and drain all the battery, do NOT record them
+            // they CAN be fetched during fetching all active notifications
+            if (sbn.isOngoing)
+                return
+
             Log.d(tag, "Notification received, saving.")
 
             Index.saveNotification(this, listOf(sbn))

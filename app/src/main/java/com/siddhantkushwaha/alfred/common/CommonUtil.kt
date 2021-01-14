@@ -61,8 +61,10 @@ object CommonUtil {
         }.toTypedArray()
     }
 
-    public fun saveBitmapToFile(context: Context, name: String, bitmap: Bitmap): String? {
+    public fun saveBitmapToFile(context: Context, bitmap: Bitmap): String? {
         try {
+            val bitmapHash = bitmap.hashCode()
+            val name = "${bitmapHash}.png"
             val file = File(context.getExternalFilesDir(null), name)
             val fos = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)

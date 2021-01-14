@@ -24,9 +24,8 @@ object Index {
                     val nId = sbn.id
                     val nTag = sbn.tag
                     val nPackage = sbn.packageName
-                    val nTimestamp = sbn.postTime
 
-                    val notificationId = CommonUtil.getHash("$nId-$nTag-$nPackage-$nTimestamp")
+                    val notificationId = CommonUtil.getHash("$nId-$nTag-$nPackage")
 
                     var notification =
                         realmT.where(Notification::class.java).equalTo("id", notificationId)
@@ -36,11 +35,10 @@ object Index {
                             ?: throw Exception("Could not create notification entity.")
 
                         notification.packageName = nPackage
-
-                        notification.timestamp = nTimestamp
-
                         notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
                     }
+
+                    notification.timestamp = sbn.postTime
 
                     val properties = notification.getProperties() ?: HashMap()
 
@@ -49,7 +47,6 @@ object Index {
                         val smallIconBitmap = smallIcon.loadDrawable(context).toBitmap()
                         val smallIconUri = CommonUtil.saveBitmapToFile(
                             context,
-                            "${notificationId}_android.smallIcon.png",
                             smallIconBitmap
                         )
                         properties["android.smallIcon"] = smallIconUri
@@ -60,7 +57,6 @@ object Index {
                         val largeIconBitmap = largeIcon.loadDrawable(context).toBitmap()
                         val largeIconUri = CommonUtil.saveBitmapToFile(
                             context,
-                            "${notificationId}_android.largeIcon.png",
                             largeIconBitmap
                         )
                         properties["android.largeIcon"] = largeIconUri
@@ -90,7 +86,6 @@ object Index {
                                     val iconBitmap = iconDrawable.toBitmap()
                                     CommonUtil.saveBitmapToFile(
                                         context,
-                                        "${notificationId}_$key.png",
                                         iconBitmap
                                     )
                                 } else null
@@ -101,7 +96,6 @@ object Index {
                                 if (bitmap != null) {
                                     CommonUtil.saveBitmapToFile(
                                         context,
-                                        "${notificationId}_$key.png",
                                         bitmap
                                     )
                                 } else null
@@ -114,7 +108,6 @@ object Index {
                                     val pictureBitmap = pictureDrawable.toBitmap()
                                     CommonUtil.saveBitmapToFile(
                                         context,
-                                        "${notificationId}_$key.png",
                                         pictureBitmap
                                     )
                                 } else null
@@ -123,12 +116,19 @@ object Index {
                             else -> {
                                 value.toString()
                             }
-
                         }
 
                         /* Don't update if key already exists
                         This covers Deleted/Unsent messages */
-                        if (!properties.containsKey(key)) {
+                        var updateValue = true
+
+                        if(properties.containsKey(key))
+                            updateValue = false
+
+                        if(sbn.isOngoing)
+                            updateValue = true
+
+                        if (updateValue) {
                             properties[key] = stringValue
                         }
                     }
