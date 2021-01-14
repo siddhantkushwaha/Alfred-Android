@@ -38,7 +38,7 @@ object Index {
                         notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
                     }
 
-                    if (sbn.isOngoing)
+                    if (notification.timestamp == null || sbn.isOngoing)
                         notification.timestamp = sbn.postTime
 
                     val properties = notification.getProperties() ?: HashMap()
