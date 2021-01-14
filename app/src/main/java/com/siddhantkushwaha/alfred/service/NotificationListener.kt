@@ -1,6 +1,5 @@
 package com.siddhantkushwaha.alfred.service
 
-
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,6 +9,7 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.siddhantkushwaha.alfred.R
 import com.siddhantkushwaha.alfred.index.Index
+
 
 class NotificationListener : NotificationListenerService() {
 

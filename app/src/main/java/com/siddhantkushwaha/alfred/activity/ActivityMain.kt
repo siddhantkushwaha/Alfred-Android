@@ -1,19 +1,25 @@
 package com.siddhantkushwaha.alfred.activity
 
-
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import com.siddhantkushwaha.alfred.R
+import com.siddhantkushwaha.alfred.common.RealmUtil
 import com.siddhantkushwaha.alfred.service.NotificationListener
+import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class ActivityMain : ActivityBase() {
+
+    private lateinit var realm: Realm
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        realm = RealmUtil.getCustomRealmInstance(this)
 
         requestNotificationAccess()
 
@@ -21,6 +27,11 @@ class ActivityMain : ActivityBase() {
 
         image_view_logo.setOnClickListener {
             sendBroadcast()
+        }
+
+        image_view_logo.setOnLongClickListener {
+            RealmUtil.clearData(realm)
+            true
         }
     }
 

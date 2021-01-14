@@ -18,8 +18,6 @@ object Index {
     public fun saveNotification(context: Context, sbns: List<StatusBarNotification>) {
         val task = Thread {
 
-            println("***** ${sbns.size}")
-
             val realm = RealmUtil.getCustomRealmInstance(context)
             sbns.forEach { sbn ->
                 realm.executeTransaction { realmT ->
@@ -117,7 +115,11 @@ object Index {
 
                         }
 
-                        properties[key] = Pair(valueClassString, stringValue)
+                        /* Don't update if key already exists
+                        This covers Deleted/Unsent messages */
+                        if (!properties.containsKey(key)) {
+                            properties[key] = Pair(valueClassString, stringValue)
+                        }
                     }
 
                     notification.setProperties(properties)

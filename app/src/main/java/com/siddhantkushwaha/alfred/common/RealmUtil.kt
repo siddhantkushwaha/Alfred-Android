@@ -1,9 +1,9 @@
 package com.siddhantkushwaha.alfred.common
 
-
 import android.content.Context
 import io.realm.Realm
 import io.realm.RealmConfiguration
+
 
 object RealmUtil {
 
@@ -17,6 +17,6 @@ object RealmUtil {
     }
 
     public fun clearData(realm: Realm) {
-        realm.executeTransaction { realmL: Realm -> realmL.deleteAll() }
+        realm.executeTransactionAsync { realmL: Realm -> realmL.deleteAll() }
     }
 }

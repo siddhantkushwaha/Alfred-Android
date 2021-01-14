@@ -1,8 +1,8 @@
 package com.siddhantkushwaha.alfred.common
 
-
 import com.google.gson.Gson
 import java.lang.reflect.Type
+
 
 object GsonUtil {
 
