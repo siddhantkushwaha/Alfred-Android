@@ -1,5 +1,6 @@
 package com.siddhantkushwaha.alfred.common
 
+
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -11,7 +12,6 @@ import java.security.MessageDigest
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.*
-
 
 object CommonUtil {
     public fun getDeviceId(context: Context): String {

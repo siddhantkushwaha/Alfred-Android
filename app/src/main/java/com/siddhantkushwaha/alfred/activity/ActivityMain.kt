@@ -9,7 +9,6 @@ import com.siddhantkushwaha.alfred.R
 import com.siddhantkushwaha.alfred.service.NotificationListener
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class ActivityMain : ActivityBase() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +19,7 @@ class ActivityMain : ActivityBase() {
 
         beginService()
 
-        text_view.setOnClickListener {
+        image_view_logo.setOnClickListener {
             sendBroadcast()
         }
     }

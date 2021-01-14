@@ -4,6 +4,7 @@ import com.siddhantkushwaha.alfred.common.GsonUtil
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
+
 open class Notification : RealmObject() {
 
     @PrimaryKey
@@ -19,12 +20,16 @@ open class Notification : RealmObject() {
         this.properties = GsonUtil.toJson(properties)
     }
 
-    public fun getProperty(key: String): String? {
+    public fun getProperties(): HashMap<String, Pair<String, String?>>? {
         val propertiesL = properties ?: return null
-        val propertiesMap = GsonUtil.fromJson<HashMap<String, Pair<String, String?>>>(
+        return GsonUtil.fromJson(
             propertiesL,
             HashMap::class.java
         )
-        return propertiesMap[key]?.second
+    }
+
+    public fun getProperty(key: String): String? {
+        val propertiesMap = getProperties()
+        return propertiesMap?.get(key)?.second
     }
 }
