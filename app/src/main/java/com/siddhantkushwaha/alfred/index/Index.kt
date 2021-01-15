@@ -154,7 +154,7 @@ object Index {
         // For messaging apps (WhatsApp), append
         if (sbn.packageName == "com.whatsapp") {
             val values = properties[key] ?: ArrayList()
-            if (values.last() != value && value != null) {
+            if (values.lastOrNull() != value && value != null) {
                 notification.timestamp = sbn.postTime
                 values.add(value)
                 properties[key] = values
