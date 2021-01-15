@@ -38,9 +38,6 @@ object Index {
                         notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
                     }
 
-                    if (notification.timestamp == null || sbn.isOngoing)
-                        notification.timestamp = sbn.postTime
-
                     val properties = notification.getProperties() ?: HashMap()
 
                     val smallIcon = sbn.notification.smallIcon
@@ -50,7 +47,13 @@ object Index {
                             context,
                             smallIconBitmap
                         )
-                        updateValueForKey(sbn, properties, "android.smallIcon", smallIconUri)
+                        updateValueForKey(
+                            sbn,
+                            notification,
+                            properties,
+                            "android.smallIcon",
+                            smallIconUri
+                        )
                     }
 
                     val largeIcon = sbn.notification.getLargeIcon()
@@ -60,7 +63,13 @@ object Index {
                             context,
                             largeIconBitmap
                         )
-                        updateValueForKey(sbn, properties, "android.largeIcon", largeIconUri)
+                        updateValueForKey(
+                            sbn,
+                            notification,
+                            properties,
+                            "android.largeIcon",
+                            largeIconUri
+                        )
                     }
 
                     val extras = sbn.notification.extras
@@ -119,7 +128,7 @@ object Index {
                             }
                         }
 
-                        updateValueForKey(sbn, properties, key, stringValue)
+                        updateValueForKey(sbn, notification, properties, key, stringValue)
                     }
 
                     notification.setProperties(properties)
@@ -134,23 +143,27 @@ object Index {
 
     private fun updateValueForKey(
         sbn: StatusBarNotification,
-        properties: HashMap<String, String?>,
+        notification: Notification,
+        properties: HashMap<String, ArrayList<String>>,
         key: String,
         value: String?
     ) {
+        // for ongoing notifications and new fields, simply insert/overwrite
+        if (!properties.containsKey(key) || sbn.isOngoing) {
+            if (value != null) {
+                notification.timestamp = sbn.postTime
+                properties[key] = arrayListOf(value)
+            }
+        }
 
-        var updateValue = true
-
-        /* Don't update if key already exists
-        This covers Deleted/Unsent messages */
-        if (properties.containsKey(key))
-            updateValue = false
-
-        if (sbn.isOngoing)
-            updateValue = true
-
-        if (updateValue) {
-            properties[key] = value
+        // For messaging apps (WhatsApp), append
+        else if (sbn.packageName == "com.whatsapp") {
+            val values = properties[key] ?: ArrayList()
+            if (values.last() != value && value != null) {
+                notification.timestamp = sbn.postTime
+                values.add(value)
+                properties[key] = values
+            }
         }
     }
 }

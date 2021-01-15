@@ -17,6 +17,6 @@ object RealmUtil {
     }
 
     public fun clearData(realm: Realm) {
-        realm.executeTransactionAsync { realmL: Realm -> realmL.deleteAll() }
+        realm.executeTransaction { realmL: Realm -> realmL.deleteAll() }
     }
 }

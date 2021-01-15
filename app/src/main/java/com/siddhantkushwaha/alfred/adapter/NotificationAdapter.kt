@@ -48,16 +48,18 @@ class NotificationAdapter(
             val notificationPictureImageView =
                 itemView.findViewById<ImageView>(R.id.image_view_notification_picture)
 
-            Glide.with(context).load(notification.getProperty("android.smallIcon"))
+            Glide.with(context).load(notification.getProperty("android.smallIcon")?.last())
                 .error(R.drawable.icon_logo).into(appLogoImageView)
 
             appNameTextView.text = notification.appName
 
-            notificationTitleTextView.text = notification.getProperty("android.title")
+            notificationTitleTextView.text = notification.getProperty("android.title")?.last()
 
-            notificationContentTextView.text = notification.getProperty("android.text")
 
-            val largeIconUri = notification.getProperty("android.largeIcon")
+            notificationContentTextView.text =
+                notification.getProperty("android.text")?.last()
+
+            val largeIconUri = notification.getProperty("android.largeIcon")?.last()
             if (largeIconUri != null) {
                 notificationLargeIconImageView.visibility = View.VISIBLE
                 Glide.with(context).load(largeIconUri)
@@ -66,7 +68,7 @@ class NotificationAdapter(
                 notificationLargeIconImageView.visibility = View.GONE
             }
 
-            val picture = notification.getProperty("android.picture")
+            val picture = notification.getProperty("android.picture")?.last()
             if (picture != null) {
                 notificationPictureImageView.visibility = View.VISIBLE
                 Glide.with(context).load(picture).centerCrop().into(notificationPictureImageView)

@@ -17,11 +17,11 @@ open class Notification : RealmObject() {
     // properties is going to be a JSON string
     public var properties: String? = null
 
-    public fun setProperties(properties: HashMap<String, String?>) {
+    public fun setProperties(properties: HashMap<String, ArrayList<String>>) {
         this.properties = GsonUtil.toJson(properties)
     }
 
-    public fun getProperties(): HashMap<String, String?>? {
+    public fun getProperties(): HashMap<String, ArrayList<String>>? {
         val propertiesL = properties ?: return null
         return GsonUtil.fromJson(
             propertiesL,
@@ -29,7 +29,7 @@ open class Notification : RealmObject() {
         )
     }
 
-    public fun getProperty(key: String): String? {
+    public fun getProperty(key: String): ArrayList<String>? {
         val propertiesMap = getProperties()
         return propertiesMap?.get(key)
     }
