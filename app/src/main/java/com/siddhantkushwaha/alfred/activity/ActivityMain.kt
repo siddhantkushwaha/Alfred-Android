@@ -35,7 +35,12 @@ class ActivityMain : ActivityBase() {
         realm = RealmUtil.getCustomRealmInstance(this)
 
         notifications =
-            realm.where(Notification::class.java).sort("timestamp", Sort.DESCENDING).findAllAsync()
+            realm
+                .where(Notification::class.java)
+                .equalTo("hidden", false)
+                .sort("timestamp", Sort.DESCENDING)
+                .findAllAsync()
+
         notificationChangeListener = OrderedRealmCollectionChangeListener { _, _ ->
             notificationAdapter.notifyDataSetChanged()
         }

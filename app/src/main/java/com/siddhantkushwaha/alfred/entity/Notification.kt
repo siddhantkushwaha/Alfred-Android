@@ -13,6 +13,7 @@ open class Notification : RealmObject() {
     public var timestamp: Long? = null
     public var packageName: String? = null
     public var appName: String? = null
+    public var hidden: Boolean? = null
 
     // properties is going to be a JSON string
     public var properties: String? = null

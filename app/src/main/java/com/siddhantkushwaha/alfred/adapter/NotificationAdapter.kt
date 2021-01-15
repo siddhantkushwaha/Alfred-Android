@@ -55,9 +55,13 @@ class NotificationAdapter(
 
             notificationTitleTextView.text = notification.getProperty("android.title")?.last()
 
+            val content =
+                if (notification.packageName != "com.whatsapp")
+                    notification.getProperty("android.text")?.last()
+                else
+                    notification.getProperty("android.text")?.joinToString("\n")
 
-            notificationContentTextView.text =
-                notification.getProperty("android.text")?.last()
+            notificationContentTextView.text = content
 
             val largeIconUri = notification.getProperty("android.largeIcon")?.last()
             if (largeIconUri != null) {

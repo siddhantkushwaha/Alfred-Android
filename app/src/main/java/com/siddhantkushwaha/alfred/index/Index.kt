@@ -36,6 +36,7 @@ object Index {
 
                         notification.packageName = nPackage
                         notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
+                        notification.hidden = false
                     }
 
                     val properties = notification.getProperties() ?: HashMap()
@@ -132,6 +133,8 @@ object Index {
                     }
 
                     notification.setProperties(properties)
+                    updateNotificationEntityPostAttributeFetch(notification)
+
                     realmT.insertOrUpdate(notification)
                 }
             }
@@ -148,21 +151,31 @@ object Index {
         key: String,
         value: String?
     ) {
-        // for ongoing notifications and new fields, simply insert/overwrite
-        if (!properties.containsKey(key) || sbn.isOngoing) {
-            if (value != null) {
-                notification.timestamp = sbn.postTime
-                properties[key] = arrayListOf(value)
-            }
-        }
-
         // For messaging apps (WhatsApp), append
-        else if (sbn.packageName == "com.whatsapp") {
+        if (sbn.packageName == "com.whatsapp") {
             val values = properties[key] ?: ArrayList()
             if (values.last() != value && value != null) {
                 notification.timestamp = sbn.postTime
                 values.add(value)
                 properties[key] = values
+            }
+        }
+
+        // simply insert/overwrite
+        else if (value != null) {
+            // update timestamp when any key updated
+            notification.timestamp = sbn.postTime
+            properties[key] = arrayListOf(value)
+        }
+    }
+
+    private fun updateNotificationEntityPostAttributeFetch(notification: Notification) {
+        val properties = notification.getProperties() ?: HashMap()
+        if (notification.packageName == "com.whatsapp") {
+            // these are summary messages from WhatsApp which we don't want to show
+            if (!properties.containsKey("android.largeIcon")) {
+                notification.hidden = true
+                return
             }
         }
     }
