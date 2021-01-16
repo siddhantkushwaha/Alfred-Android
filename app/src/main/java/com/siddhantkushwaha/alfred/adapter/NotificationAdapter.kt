@@ -57,9 +57,12 @@ class NotificationAdapter(
 
             val content =
                 if (notification.packageName != "com.whatsapp")
-                    notification.getProperty("android.text")?.lastOrNull()
+                    notification.getProperty("android.text")
+                        ?.lastOrNull()
                 else
-                    notification.getProperty("android.text")?.joinToString("\n")
+                    notification.getProperty("android.text")
+                        ?.takeLast(5)
+                        ?.joinToString("\n")
 
             notificationContentTextView.text = content
 
