@@ -22,7 +22,7 @@ class NotificationAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_notification, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.notification, parent, false)
         return NotificationViewHolder(context, view)
     }
 
