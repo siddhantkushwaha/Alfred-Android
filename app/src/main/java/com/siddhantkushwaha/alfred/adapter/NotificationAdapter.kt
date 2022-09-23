@@ -48,25 +48,15 @@ class NotificationAdapter(
             val notificationPictureImageView =
                 itemView.findViewById<ImageView>(R.id.image_view_notification_picture)
 
-            Glide.with(context).load(notification.getProperty("android.smallIcon")?.lastOrNull())
+            Glide.with(context).load(notification.appIconUri)
                 .error(R.drawable.icon_logo).into(appLogoImageView)
 
             appNameTextView.text = notification.appName
 
-            notificationTitleTextView.text = notification.getProperty("android.title")?.lastOrNull()
+            notificationTitleTextView.text = notification.textTitle
+            notificationContentTextView.text = notification.textContent
 
-            val content =
-                if (notification.packageName != "com.whatsapp")
-                    notification.getProperty("android.text")
-                        ?.lastOrNull()
-                else
-                    notification.getProperty("android.text")
-                        ?.takeLast(5)
-                        ?.joinToString("\n")
-
-            notificationContentTextView.text = content
-
-            val largeIconUri = notification.getProperty("android.largeIcon")?.lastOrNull()
+            val largeIconUri = notification.largeIconUri
             if (largeIconUri != null) {
                 notificationLargeIconImageView.visibility = View.VISIBLE
                 Glide.with(context).load(largeIconUri)
@@ -75,7 +65,7 @@ class NotificationAdapter(
                 notificationLargeIconImageView.visibility = View.GONE
             }
 
-            val picture = notification.getProperty("android.picture")?.lastOrNull()
+            val picture = notification.pictureUri
             if (picture != null) {
                 notificationPictureImageView.visibility = View.VISIBLE
                 Glide.with(context).load(picture).centerCrop().into(notificationPictureImageView)

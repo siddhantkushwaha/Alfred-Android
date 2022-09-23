@@ -3,9 +3,13 @@ package com.siddhantkushwaha.alfred.common
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Picture
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.Icon
+import android.graphics.drawable.PictureDrawable
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
+import androidx.core.graphics.drawable.toBitmap
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.security.MessageDigest
@@ -21,7 +25,7 @@ object CommonUtil {
 
     public fun getHash(data: String, algorithm: String = "SHA-256"): String {
         return MessageDigest.getInstance(algorithm).digest(data.toByteArray())
-            .fold("", { str, it -> str + "%02x".format(it) })
+            .fold("") { str, it -> str + "%02x".format(it) }
     }
 
     public fun formatTimestamp(timestamp: Long, format: String): String {
@@ -98,5 +102,47 @@ object CommonUtil {
             e.printStackTrace()
         }
         return null
+    }
+
+    public fun getImageUri(context: Context, value: Any): String? {
+        return when (value.javaClass) {
+            Icon::class.java -> {
+                val icon = (value as? Icon)
+                if (icon != null) {
+                    val iconDrawable = icon.loadDrawable(context)
+                    val iconBitmap = iconDrawable.toBitmap()
+                    saveBitmapToFile(
+                        context,
+                        iconBitmap
+                    )
+                } else null
+            }
+
+            Bitmap::class.java -> {
+                val bitmap = (value as? Bitmap)
+                if (bitmap != null) {
+                    saveBitmapToFile(
+                        context,
+                        bitmap
+                    )
+                } else null
+            }
+
+            Picture::class.java -> {
+                val picture = (value as? Picture)
+                if (picture != null) {
+                    val pictureDrawable = PictureDrawable(picture)
+                    val pictureBitmap = pictureDrawable.toBitmap()
+                    saveBitmapToFile(
+                        context,
+                        pictureBitmap
+                    )
+                } else null
+            }
+
+            else -> {
+                null
+            }
+        }
     }
 }

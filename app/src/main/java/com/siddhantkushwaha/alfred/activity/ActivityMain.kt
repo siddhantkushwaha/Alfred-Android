@@ -37,7 +37,6 @@ class ActivityMain : ActivityBase() {
         notifications =
             realm
                 .where(Notification::class.java)
-                .equalTo("hidden", false)
                 .sort("timestamp", Sort.DESCENDING)
                 .findAllAsync()
 
@@ -52,9 +51,8 @@ class ActivityMain : ActivityBase() {
         recycler_view_notifications.layoutManager = layoutManager
         recycler_view_notifications.adapter = notificationAdapter
 
-
         image_view_logo.setOnClickListener {
-            sendBroadcast()
+            sendSaveBroadcast()
         }
 
         image_view_logo.setOnLongClickListener {
@@ -104,8 +102,14 @@ class ActivityMain : ActivityBase() {
         startService(serviceIntent)
     }
 
-    private fun sendBroadcast() {
-        val intent = Intent(getString(R.string.action_notification_service_receiver))
+    private fun sendSaveBroadcast() {
+        val intent = Intent(getString(R.string.action_notification_service_receiver_fetch))
+        sendBroadcast(intent)
+    }
+
+    private fun sendCancelBroadcast(key:String) {
+        val intent = Intent(getString(R.string.action_notification_service_receiver_cancel))
+        intent.putExtra("notification_key", key)
         sendBroadcast(intent)
     }
 }

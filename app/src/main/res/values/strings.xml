@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Alfred</string>
-    <string name="action_notification_service_receiver">com.siddhantkushwaha.alfred.NOTIFICATION_SERVICE_RECEIVER</string>
+    <string name="action_notification_service_receiver_fetch">com.siddhantkushwaha.alfred.NOTIFICATION_SERVICE_RECEIVER_FETCH</string>
+    <string name="action_notification_service_receiver_cancel">com.siddhantkushwaha.alfred.NOTIFICATION_SERVICE_RECEIVER_CANCEL</string>
 </resources>
