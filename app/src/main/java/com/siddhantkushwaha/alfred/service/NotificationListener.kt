@@ -45,9 +45,13 @@ class NotificationListener : NotificationListenerService() {
 
             Log.d(tag, "Notification received, saving.")
 
-            Index.saveNotification(this, listOf(sbn))
-
-
+            Index.processNotifications(this, listOf(sbn)) { notificationKey, notificationType ->
+                when (notificationType) {
+                    "spam" -> {
+                        cancelNotification(notificationKey)
+                    }
+                }
+            }
         }
     }
 
@@ -68,10 +72,12 @@ class NotificationListener : NotificationListenerService() {
             when (action) {
                 getString(R.string.action_notification_service_receiver_fetch) -> {
                     Log.d(tag, "Broadcast action received. Saving all active notifications.")
-                    Index.saveNotification(
+                    Index.processNotifications(
                         context,
                         notificationListener.activeNotifications.asList()
-                    )
+                    ) { notificationKey, notificationType ->
+
+                    }
                 }
                 getString(R.string.action_notification_service_receiver_cancel) -> {
                     Log.d(tag, "Broadcast action received. Cancel active notification.")

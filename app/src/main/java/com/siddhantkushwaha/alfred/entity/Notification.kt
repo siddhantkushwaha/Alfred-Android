@@ -8,6 +8,7 @@ open class Notification : RealmObject() {
 
     @PrimaryKey
     var id: String? = null
+    var key: String? = null
 
     var timestamp: Long? = null
     var packageName: String? = null

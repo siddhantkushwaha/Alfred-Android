@@ -2,7 +2,6 @@ package com.siddhantkushwaha.alfred.index
 
 import android.content.Context
 import android.service.notification.StatusBarNotification
-import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.siddhantkushwaha.alfred.common.CommonUtil
 import com.siddhantkushwaha.alfred.common.RealmUtil
@@ -10,9 +9,10 @@ import com.siddhantkushwaha.alfred.entity.Notification
 
 
 object Index {
-    public fun saveNotification(
+    public fun processNotifications(
         context: Context,
-        statusBarNotifications: List<StatusBarNotification>
+        statusBarNotifications: List<StatusBarNotification>,
+        callback: (String, String) -> Unit
     ) {
         val task = Thread {
             val realm = RealmUtil.getCustomRealmInstance(context)
@@ -20,6 +20,7 @@ object Index {
                 try {
                     realm.executeTransaction { realmT ->
                         val nId = statusBarNotification.id
+                        val nKey = statusBarNotification.key
                         val nTag = statusBarNotification.tag
                         val nPackage = statusBarNotification.packageName
 
@@ -36,6 +37,7 @@ object Index {
 
                             notification.packageName = nPackage
                             notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
+                            notification.key = nKey
                         }
 
                         var smallIcon =
@@ -68,7 +70,6 @@ object Index {
                         val extras = statusBarNotification.notification.extras
                         for (key in extras.keySet()) {
                             val value = extras.get(key) ?: continue
-                            Log.d("Index", "$key - [$value]")
                             when (key) {
                                 "android.text" -> {
                                     notification.textContent = value.toString()
@@ -82,6 +83,8 @@ object Index {
                             }
                         }
 
+                        processByType(notification, callback)
+
                         realmT.insertOrUpdate(notification)
                     }
                 } catch (e: Exception) {
@@ -93,4 +96,10 @@ object Index {
         task.start()
     }
 
+    private fun processByType(notification: Notification, callback: (String, String) -> Unit) {
+        val key = notification.key ?: return
+        if (notification.appName == "") {
+            // callback(key, "spam")
+        }
+    }
 }
