@@ -85,9 +85,15 @@ object Index {
                             }
                         }
 
-                        getNotificationType(notification, callback)
+                        notification.type = getNotificationType(notification)
 
                         realmT.insertOrUpdate(notification)
+
+                        val key = notification.key
+                        val type = notification.type
+                        if (key != null && type != null) {
+                            callback(key, type)
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -98,10 +104,11 @@ object Index {
         task.start()
     }
 
-    private fun getNotificationType(notification: Notification, callback: (String, String) -> Unit) {
-        val key = notification.key ?: return
-        if (notification.appName == "WhatsApp") {
-            callback(key, "spam")
+    private fun getNotificationType(notification: Notification): String? {
+        var type: String? = null
+        if (notification.appName == "Instagram") {
+            type = "spam"
         }
+        return type
     }
 }

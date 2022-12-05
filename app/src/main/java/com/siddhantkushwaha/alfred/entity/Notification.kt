@@ -20,4 +20,6 @@ open class Notification : RealmObject() {
 
     var textTitle: String? = null
     var textContent: String? = null
+
+    var type: String? = null
 }
