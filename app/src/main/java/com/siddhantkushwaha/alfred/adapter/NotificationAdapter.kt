@@ -17,7 +17,8 @@ import io.realm.RealmRecyclerViewAdapter
 class NotificationAdapter(
     private val context: Context,
     data: OrderedRealmCollection<Notification>,
-    autoUpdate: Boolean
+    autoUpdate: Boolean,
+    val clickListener: (Notification) -> Unit
 ) : RealmRecyclerViewAdapter<Notification, RecyclerView.ViewHolder>(data, autoUpdate) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -28,12 +29,16 @@ class NotificationAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val notification = data?.get(position) ?: throw Exception("null object not allowed here")
-        (holder as NotificationViewHolder).bind(notification)
+        (holder as NotificationViewHolder).bind(notification, clickListener)
     }
 
     private class NotificationViewHolder(val context: Context, itemView: View) :
         RecyclerView.ViewHolder(itemView) {
-        fun bind(notification: Notification) {
+        fun bind(notification: Notification, clickListener: (Notification) -> Unit) {
+
+            itemView.setOnClickListener {
+                clickListener.invoke(notification)
+            }
 
             val appLogoImageView = itemView.findViewById<ImageView>(R.id.image_view_app_logo)
             val appNameTextView = itemView.findViewById<TextView>(R.id.text_view_app_name)

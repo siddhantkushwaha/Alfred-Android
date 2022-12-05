@@ -34,16 +34,17 @@ class ActivityMain : ActivityBase() {
 
         realm = RealmUtil.getCustomRealmInstance(this)
 
-        notifications =
-            realm
-                .where(Notification::class.java)
-                .sort("timestamp", Sort.DESCENDING)
-                .findAllAsync()
+        notifications = realm
+            .where(Notification::class.java)
+            .sort("timestamp", Sort.DESCENDING)
+            .findAllAsync()
 
         notificationChangeListener = OrderedRealmCollectionChangeListener { _, _ ->
             notificationAdapter.notifyDataSetChanged()
         }
-        notificationAdapter = NotificationAdapter(this, notifications, true)
+        notificationAdapter = NotificationAdapter(this, notifications, true) {
+            onNotificationClicked(it)
+        }
 
         val layoutManager = LinearLayoutManager(this)
         layoutManager.stackFromEnd = false
@@ -107,9 +108,16 @@ class ActivityMain : ActivityBase() {
         sendBroadcast(intent)
     }
 
-    private fun sendCancelBroadcast(key:String) {
+    private fun sendCancelBroadcast(key: String) {
         val intent = Intent(getString(R.string.action_notification_service_receiver_cancel))
         intent.putExtra("notification_key", key)
         sendBroadcast(intent)
+    }
+
+    private fun onNotificationClicked(notification: Notification) {
+        val key = notification.key
+        if (key != null) {
+            sendCancelBroadcast(key)
+        }
     }
 }

@@ -25,6 +25,7 @@ class NotificationListener : NotificationListenerService() {
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(this.getString(R.string.action_notification_service_receiver_fetch))
+        intentFilter.addAction(this.getString(R.string.action_notification_service_receiver_cancel))
 
         registerReceiver(notificationServiceReceiver, intentFilter)
     }
@@ -46,12 +47,10 @@ class NotificationListener : NotificationListenerService() {
             Log.d(tag, "Notification received, saving.")
 
             Index.processNotifications(this, listOf(sbn)) { notificationKey, notificationType ->
-                when (notificationType) {
-                    "spam" -> {
-                        cancelNotification(notificationKey)
-                    }
-                }
+                takeActionOnNotificationType(notificationKey, notificationType)
             }
+
+            //cancelNotification(sbn.key)
         }
     }
 
@@ -63,12 +62,21 @@ class NotificationListener : NotificationListenerService() {
         super.onNotificationRankingUpdate(rankingMap)
     }
 
+    private fun takeActionOnNotificationType(key: String, type: String) {
+        when (type) {
+            "spam" -> {
+                cancelNotification(key)
+            }
+        }
+    }
+
     internal inner class NotificationServiceReceiver : BroadcastReceiver() {
         private val notificationListener = this@NotificationListener
 
         override fun onReceive(context: Context?, intent: Intent?) {
             if (context == null || intent == null) return
-            val action = intent.action ?: return
+            val action = intent.action ?: "NULL"
+            Log.d(tag, "Broadcast received action: [$action].")
             when (action) {
                 getString(R.string.action_notification_service_receiver_fetch) -> {
                     Log.d(tag, "Broadcast action received. Saving all active notifications.")
@@ -76,7 +84,7 @@ class NotificationListener : NotificationListenerService() {
                         context,
                         notificationListener.activeNotifications.asList()
                     ) { notificationKey, notificationType ->
-
+                        takeActionOnNotificationType(notificationKey, notificationType)
                     }
                 }
                 getString(R.string.action_notification_service_receiver_cancel) -> {
@@ -84,6 +92,9 @@ class NotificationListener : NotificationListenerService() {
 
                     val notificationKey = intent.getStringExtra("notification_key")
                     notificationListener.cancelNotification(notificationKey)
+                }
+                else -> {
+
                 }
             }
         }

@@ -6,10 +6,11 @@ import androidx.core.graphics.drawable.toBitmap
 import com.siddhantkushwaha.alfred.common.CommonUtil
 import com.siddhantkushwaha.alfred.common.RealmUtil
 import com.siddhantkushwaha.alfred.entity.Notification
+import java.time.Instant
 
 
 object Index {
-    public fun processNotifications(
+    fun processNotifications(
         context: Context,
         statusBarNotifications: List<StatusBarNotification>,
         callback: (String, String) -> Unit
@@ -38,6 +39,7 @@ object Index {
                             notification.packageName = nPackage
                             notification.appName = CommonUtil.getAppNameByPackage(context, nPackage)
                             notification.key = nKey
+                            notification.timestamp = Instant.now().toEpochMilli()
                         }
 
                         var smallIcon =
@@ -83,7 +85,7 @@ object Index {
                             }
                         }
 
-                        processByType(notification, callback)
+                        getNotificationType(notification, callback)
 
                         realmT.insertOrUpdate(notification)
                     }
@@ -96,10 +98,10 @@ object Index {
         task.start()
     }
 
-    private fun processByType(notification: Notification, callback: (String, String) -> Unit) {
+    private fun getNotificationType(notification: Notification, callback: (String, String) -> Unit) {
         val key = notification.key ?: return
-        if (notification.appName == "") {
-            // callback(key, "spam")
+        if (notification.appName == "WhatsApp") {
+            callback(key, "spam")
         }
     }
 }
